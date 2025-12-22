@@ -1,6 +1,7 @@
 import { createClient } from '@/utils/supabase/server'
 import Link from 'next/link'
 import { formatDistanceToNow } from 'date-fns'
+import { VerifiedBadge } from '@/components/VerifiedBadge'
 
 export default async function FeedPage() {
     const supabase = await createClient()
@@ -42,7 +43,10 @@ export default async function FeedPage() {
                                     </div>
                                 </div>
                                 <div className="ml-3">
-                                    <p className="text-sm font-medium text-gray-900">{listing.donor?.organization_name || listing.donor?.display_name || 'Anonymous'}</p>
+                                    <p className="text-sm font-medium text-gray-900 flex items-center gap-1">
+                                        {listing.donor?.organization_name || listing.donor?.display_name || 'Anonymous'}
+                                        {listing.donor?.is_verified && <VerifiedBadge />}
+                                    </p>
                                     <p className="text-xs text-gray-500">
                                         {/* Distance would require geo calculation, just showing time for now */}
                                         {listing.created_at ? formatDistanceToNow(new Date(listing.created_at), { addSuffix: true }) : 'Just now'}

@@ -33,13 +33,15 @@ export default function NotificationDropdown({ userId }: { userId: string }) {
 
             if (data) {
                 setNotifications(data)
-                setUnreadCount(data.filter(n => !n.is_read).length)
+                const unread = data.filter(n => !n.is_read).length
+                setUnreadCount(unread)
+                console.log('Fetched notifications:', data.length, 'Unread:', unread)
             }
         }
 
         fetchNotifications()
 
-        // Real-time subscription
+        // Real-time subscription for NEW notifications
         const channel = supabase
             .channel('realtime_notifications')
             .on('postgres_changes', {
@@ -48,8 +50,12 @@ export default function NotificationDropdown({ userId }: { userId: string }) {
                 table: 'notifications',
                 filter: `user_id=eq.${userId}`
             }, (payload) => {
-                setNotifications(prev => [payload.new as Notification, ...prev])
-                setUnreadCount(prev => prev + 1)
+                const newNotif = payload.new as Notification
+                setNotifications(prev => [newNotif, ...prev])
+                // Only increment if it's truly unread
+                if (!newNotif.is_read) {
+                    setUnreadCount(prev => prev + 1)
+                }
             })
             .subscribe()
 
@@ -59,10 +65,27 @@ export default function NotificationDropdown({ userId }: { userId: string }) {
     }, [userId])
 
     const markAsRead = async () => {
-        if (unreadCount > 0) {
-            await supabase.from('notifications').update({ is_read: true }).eq('user_id', userId)
-            setUnreadCount(0)
-            setNotifications(prev => prev.map(n => ({ ...n, is_read: true })))
+        const unreadNotifications = notifications.filter(n => !n.is_read)
+
+        if (unreadNotifications.length > 0) {
+            const unreadIds = unreadNotifications.map(n => n.id)
+
+            console.log('Marking as read:', unreadIds)
+
+            // Update database
+            const { error } = await supabase
+                .from('notifications')
+                .update({ is_read: true })
+                .in('id', unreadIds)
+
+            if (error) {
+                console.error('Error marking notifications as read:', error)
+            } else {
+                console.log('Successfully marked notifications as read')
+                // Update local state
+                setNotifications(prev => prev.map(n => ({ ...n, is_read: true })))
+                setUnreadCount(0)
+            }
         }
     }
 
@@ -73,8 +96,12 @@ export default function NotificationDropdown({ userId }: { userId: string }) {
                 size="icon"
                 className="relative"
                 onClick={() => {
+                    const wasOpen = isOpen
                     setIsOpen(!isOpen)
-                    if (!isOpen) markAsRead()
+                    // Only mark as read when OPENING the dropdown
+                    if (!wasOpen && unreadCount > 0) {
+                        markAsRead()
+                    }
                 }}
             >
                 <Bell className="h-6 w-6 text-gray-400 hover:text-gray-500" />
@@ -88,10 +115,10 @@ export default function NotificationDropdown({ userId }: { userId: string }) {
                     <div className="px-4 py-2 border-b border-gray-100 font-medium text-gray-700">Notifications</div>
                     <div className="max-h-96 overflow-y-auto">
                         {notifications.length === 0 ? (
-                            <div className="px-4 py-3 text-sm text-gray-500">No new notifications</div>
+                            <div className="px-4 py-3 text-sm text-gray-500">No notifications</div>
                         ) : (
                             notifications.map(notification => (
-                                <div key={notification.id} className={`px-4 py-3 border-b hover:bg-gray-50 ${notification.is_read ? 'bg-white' : 'bg-blue-50'}`}>
+                                <div key={notification.id} className={`px-4 py-3 border-b hover:bg-gray-50 transition-colors ${notification.is_read ? 'bg-white' : 'bg-blue-50'}`}>
                                     <Link href={notification.link || '#'} onClick={() => setIsOpen(false)}>
                                         <p className="text-sm font-medium text-gray-900">{notification.title}</p>
                                         <p className="text-sm text-gray-500">{notification.message}</p>

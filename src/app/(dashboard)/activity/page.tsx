@@ -33,7 +33,8 @@ export default async function ActivityPage() {
         .from('pickups')
         .select(`
         *,
-        listing:listings!inner(*)
+        listing:listings!inner(*),
+        volunteer:profiles!volunteer_id(*)
     `)
         .eq('status', 'pending')
         .filter('listing.donor_id', 'eq', user.id)

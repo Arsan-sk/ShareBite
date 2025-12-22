@@ -1,6 +1,7 @@
 import { createClient } from '@/utils/supabase/server'
 import { notFound, redirect } from 'next/navigation'
 import { Button } from '@/components/ui/button'
+import { VerifiedBadge } from '@/components/VerifiedBadge'
 import Link from 'next/link'
 
 export default async function ListingDetailsPage(props: {
@@ -51,7 +52,10 @@ export default async function ListingDetailsPage(props: {
             <div className="px-4 py-5 sm:px-6 flex justify-between">
                 <div>
                     <h3 className="text-lg leading-6 font-medium text-gray-900">Food Listing Details</h3>
-                    <p className="mt-1 max-w-2xl text-sm text-gray-500">Posted by {listing.donor?.organization_name || listing.donor?.display_name}</p>
+                    <p className="mt-1 max-w-2xl text-sm text-gray-500 flex items-center gap-1">
+                        Posted by {listing.donor?.organization_name || listing.donor?.display_name}
+                        {listing.donor?.is_verified && <VerifiedBadge />}
+                    </p>
                 </div>
                 <div>
                     <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${listing.status === 'available' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
