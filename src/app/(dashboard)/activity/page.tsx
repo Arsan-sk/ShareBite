@@ -17,38 +17,26 @@ export default async function ActivityPage() {
         .eq('donor_id', user.id)
         .order('created_at', { ascending: false })
 
-    // 2. Fetch My Pickups (As Volunter)
+    // 2. Fetch My Pickups (As Volunteer)
     const { data: pickups } = await supabase
         .from('pickups')
         .select(`
-      *,
-      listing:listings(*)
-    `)
+            *,
+            listing:listings(*)
+        `)
         .eq('volunteer_id', user.id)
         .order('created_at', { ascending: false })
 
     // 3. Fetch Incoming Requests (Pending Pickups for my listings)
-    // We need to join pickups -> listings (where donor_id = me)
     const { data: incomingRequests } = await supabase
         .from('pickups')
         .select(`
-        *,
-        listing:listings!inner(*),
-        volunteer:profiles!volunteer_id(*)
-    `)
+            *,
+            listing:listings!inner(*),
+            volunteer:profiles!volunteer_id(*)
+        `)
         .eq('status', 'pending')
         .filter('listing.donor_id', 'eq', user.id)
-
-    // 4. Fetch Chat Rooms
-    const { data: chatRooms } = await supabase
-        .from('chat_rooms')
-        .select(`
-            *,
-            donor:profiles!donor_id(id, display_name, avatar_url),
-            volunteer:profiles!volunteer_id(id, display_name, avatar_url)
-        `)
-        .or(`donor_id.eq.${user.id},volunteer_id.eq.${user.id}`)
-        .order('last_message_at', { ascending: false })
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -57,8 +45,6 @@ export default async function ActivityPage() {
                 listings={listings || []}
                 pickups={pickups || []}
                 incomingRequests={incomingRequests || []}
-                chatRooms={chatRooms || []}
-                userId={user.id}
             />
         </div>
     )

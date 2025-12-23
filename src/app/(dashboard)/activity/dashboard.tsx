@@ -5,35 +5,27 @@ import { acceptRequest, confirmHandover, markDelivered } from './actions'
 import { useState } from 'react'
 import Link from 'next/link'
 
-export default function ActivityDashboard({ listings, pickups, incomingRequests, chatRooms, userId }: {
+export default function ActivityDashboard({ listings, pickups, incomingRequests }: {
     listings: any[],
     pickups: any[],
-    incomingRequests: any[],
-    chatRooms: any[],
-    userId: string
+    incomingRequests: any[]
 }) {
-    const [activeTab, setActiveTab] = useState<'listings' | 'pickups' | 'chats'>('listings')
+    const [activeTab, setActiveTab] = useState<'listings' | 'pickups'>('listings')
 
     return (
         <div className="space-y-8">
             <div className="flex border-b border-gray-200">
                 <button
                     onClick={() => setActiveTab('listings')}
-                    className={`py-4 px-6 text-sm font-medium ${activeTab === 'listings' ? 'border-b-2 border-indigo-500 text-indigo-600' : 'text-gray-500 hover:text-gray-700'}`}
+                    className={`py-4 px-6 text-sm font-medium transition-colors ${activeTab === 'listings' ? 'border-b-2 border-green-500 text-green-600' : 'text-gray-500 hover:text-gray-700'}`}
                 >
                     My Listings (Donations)
                 </button>
                 <button
                     onClick={() => setActiveTab('pickups')}
-                    className={`py-4 px-6 text-sm font-medium ${activeTab === 'pickups' ? 'border-b-2 border-indigo-500 text-indigo-600' : 'text-gray-500 hover:text-gray-700'}`}
+                    className={`py-4 px-6 text-sm font-medium transition-colors ${activeTab === 'pickups' ? 'border-b-2 border-green-500 text-green-600' : 'text-gray-500 hover:text-gray-700'}`}
                 >
                     My Pickups (Requests)
-                </button>
-                <button
-                    onClick={() => setActiveTab('chats')}
-                    className={`py-4 px-6 text-sm font-medium ${activeTab === 'chats' ? 'border-b-2 border-indigo-500 text-indigo-600' : 'text-gray-500 hover:text-gray-700'}`}
-                >
-                    Chats
                 </button>
             </div>
 
@@ -150,66 +142,6 @@ export default function ActivityDashboard({ listings, pickups, incomingRequests,
                             </li>
                         ))}
                     </ul>
-                </div>
-            )}
-
-
-            {activeTab === 'chats' && (
-                <div className="bg-white shadow overflow-hidden sm:rounded-md">
-                    {chatRooms.length === 0 ? (
-                        <div className="p-8 text-center">
-                            <div className="mb-4">
-                                <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                                </svg>
-                            </div>
-                            <h3 className="text-lg font-medium text-gray-900 mb-2">No Chats Yet</h3>
-                            <p className="text-sm text-gray-500 mb-4">
-                                When you accept a pickup request, a chat will automatically be created so you can coordinate with the volunteer.
-                            </p>
-                            <Link href="/">
-                                <Button className="bg-indigo-600 hover:bg-indigo-700">
-                                    Browse Food Listings
-                                </Button>
-                            </Link>
-                        </div>
-                    ) : (
-                        <ul className="divide-y divide-gray-200">
-                            {chatRooms.map((room: any) => {
-                                // If current user is the donor, show volunteer name. Otherwise show donor name.
-                                const otherUser = userId === room.donor_id ? room.volunteer : room.donor
-                                return (
-                                    <li key={room.id}>
-                                        <Link
-                                            href={`/chats/${room.id}`}
-                                            className="block p-4 hover:bg-green-50 transition-colors"
-                                        >
-                                            <div className="flex items-center gap-3">
-                                                <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center overflow-hidden flex-shrink-0">
-                                                    {otherUser.avatar_url ? (
-                                                        <img src={otherUser.avatar_url} alt="Avatar" className="h-full w-full object-cover" />
-                                                    ) : (
-                                                        <span className="text-lg font-medium text-green-700">{otherUser.display_name?.[0] || 'U'}</span>
-                                                    )}
-                                                </div>
-                                                <div className="flex-1 min-w-0">
-                                                    <p className="font-semibold text-gray-900 truncate">{otherUser.display_name || 'User'}</p>
-                                                    <p className="text-sm text-gray-500" suppressHydrationWarning>
-                                                        {new Date(room.last_message_at).toLocaleDateString()}
-                                                    </p>
-                                                </div>
-                                                <div className="flex-shrink-0">
-                                                    <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                                    </svg>
-                                                </div>
-                                            </div>
-                                        </Link>
-                                    </li>
-                                )
-                            })}
-                        </ul>
-                    )}
                 </div>
             )}
         </div>
