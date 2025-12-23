@@ -6,10 +6,12 @@ import { VerifiedBadge } from '@/components/VerifiedBadge'
 import { MapModal } from '@/components/MapModal'
 import Link from 'next/link'
 import { createClient } from '@/utils/supabase/client'
+import { CheckCircle, X } from 'lucide-react'
 
 export function ListingDetailsClient({ listing, isOwner, user, listingId }: any) {
     const [showMap, setShowMap] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const [showSuccess, setShowSuccess] = useState(false)
 
     const isAvailable = listing.status === 'available'
 
@@ -31,7 +33,8 @@ export function ListingDetailsClient({ listing, isOwner, user, listingId }: any)
             if (rpcError || !success) {
                 alert('Request failed or already requested')
             } else {
-                window.location.href = '/?success=Request sent successfully'
+                // Show success modal instead of redirecting
+                setShowSuccess(true)
             }
         } catch (err) {
             alert('An error occurred')
@@ -106,7 +109,7 @@ export function ListingDetailsClient({ listing, isOwner, user, listingId }: any)
                                             onClick={() => setShowMap(true)}
                                             className="flex-shrink-0 bg-green-50 hover:bg-green-100 border-green-300 text-green-700 font-semibold"
                                         >
-                                            � View Details
+                                            📍 View Details
                                         </Button>
                                     )}
                                 </div>
@@ -146,6 +149,34 @@ export function ListingDetailsClient({ listing, isOwner, user, listingId }: any)
                     }}
                     listingTitle={listing.title}
                 />
+            )}
+
+            {/* Success Modal */}
+            {showSuccess && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+                    <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 text-center">
+                        <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
+                            <CheckCircle className="h-10 w-10 text-green-600" />
+                        </div>
+                        <h3 className="text-xl font-bold text-gray-900 mb-2">Request Sent!</h3>
+                        <p className="text-gray-600 mb-6">
+                            Your pickup request for <span className="font-semibold">"{listing.title}"</span> has been sent to the donor.
+                            You'll be notified when they respond.
+                        </p>
+                        <div className="flex gap-3">
+                            <Link href="/" className="flex-1">
+                                <Button variant="outline" className="w-full">
+                                    Back to Feed
+                                </Button>
+                            </Link>
+                            <Link href="/activity?tab=pickups" className="flex-1">
+                                <Button className="w-full bg-green-600 hover:bg-green-700">
+                                    View My Requests
+                                </Button>
+                            </Link>
+                        </div>
+                    </div>
+                </div>
             )}
         </>
     )

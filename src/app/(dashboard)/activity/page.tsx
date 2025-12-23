@@ -58,6 +58,7 @@ export default async function ActivityPage() {
                 pickups={pickups || []}
                 incomingRequests={incomingRequests || []}
                 chatRooms={chatRooms || []}
+                userId={user.id}
             />
         </div>
     )

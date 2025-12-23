@@ -5,11 +5,12 @@ import { acceptRequest, confirmHandover, markDelivered } from './actions'
 import { useState } from 'react'
 import Link from 'next/link'
 
-export default function ActivityDashboard({ listings, pickups, incomingRequests, chatRooms }: {
+export default function ActivityDashboard({ listings, pickups, incomingRequests, chatRooms, userId }: {
     listings: any[],
     pickups: any[],
     incomingRequests: any[],
-    chatRooms: any[]
+    chatRooms: any[],
+    userId: string
 }) {
     const [activeTab, setActiveTab] = useState<'listings' | 'pickups' | 'chats'>('listings')
 
@@ -175,29 +176,35 @@ export default function ActivityDashboard({ listings, pickups, incomingRequests,
                     ) : (
                         <ul className="divide-y divide-gray-200">
                             {chatRooms.map((room: any) => {
-                                const otherUser = room.donor_id === room.donor.id ? room.volunteer : room.donor
+                                // If current user is the donor, show volunteer name. Otherwise show donor name.
+                                const otherUser = userId === room.donor_id ? room.volunteer : room.donor
                                 return (
-                                    <li key={room.id} className="p-4 hover:bg-gray-50 cursor-pointer">
-                                        <div className="flex items-center justify-between">
+                                    <li key={room.id}>
+                                        <Link
+                                            href={`/chats/${room.id}`}
+                                            className="block p-4 hover:bg-green-50 transition-colors"
+                                        >
                                             <div className="flex items-center gap-3">
-                                                <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                                                <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center overflow-hidden flex-shrink-0">
                                                     {otherUser.avatar_url ? (
                                                         <img src={otherUser.avatar_url} alt="Avatar" className="h-full w-full object-cover" />
                                                     ) : (
-                                                        <span className="text-sm font-medium">{otherUser.display_name?.[0] || 'U'}</span>
+                                                        <span className="text-lg font-medium text-green-700">{otherUser.display_name?.[0] || 'U'}</span>
                                                     )}
                                                 </div>
-                                                <div>
-                                                    <p className="font-medium text-gray-900">{otherUser.display_name || 'User'}</p>
-                                                    <p className="text-sm text-gray-500">
-                                                        Last message: {new Date(room.last_message_at).toLocaleDateString()}
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="font-semibold text-gray-900 truncate">{otherUser.display_name || 'User'}</p>
+                                                    <p className="text-sm text-gray-500" suppressHydrationWarning>
+                                                        {new Date(room.last_message_at).toLocaleDateString()}
                                                     </p>
                                                 </div>
+                                                <div className="flex-shrink-0">
+                                                    <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                                    </svg>
+                                                </div>
                                             </div>
-                                            <Link href={`/chats/${room.id}`}>
-                                                <Button size="sm" variant="outline">Open Chat</Button>
-                                            </Link>
-                                        </div>
+                                        </Link>
                                     </li>
                                 )
                             })}
