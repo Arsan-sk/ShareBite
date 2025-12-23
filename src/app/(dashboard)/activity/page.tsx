@@ -39,6 +39,17 @@ export default async function ActivityPage() {
         .eq('status', 'pending')
         .filter('listing.donor_id', 'eq', user.id)
 
+    // 4. Fetch Chat Rooms
+    const { data: chatRooms } = await supabase
+        .from('chat_rooms')
+        .select(`
+            *,
+            donor:profiles!donor_id(id, display_name, avatar_url),
+            volunteer:profiles!volunteer_id(id, display_name, avatar_url)
+        `)
+        .or(`donor_id.eq.${user.id},volunteer_id.eq.${user.id}`)
+        .order('last_message_at', { ascending: false })
+
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <h1 className="text-2xl font-bold text-gray-900 mb-8">My Food Journey</h1>
@@ -46,6 +57,7 @@ export default async function ActivityPage() {
                 listings={listings || []}
                 pickups={pickups || []}
                 incomingRequests={incomingRequests || []}
+                chatRooms={chatRooms || []}
             />
         </div>
     )

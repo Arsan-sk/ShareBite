@@ -3,9 +3,15 @@
 import { Button } from '@/components/ui/button'
 import { acceptRequest, confirmHandover, markDelivered } from './actions'
 import { useState } from 'react'
+import Link from 'next/link'
 
-export default function ActivityDashboard({ listings, pickups, incomingRequests }: { listings: any[], pickups: any[], incomingRequests: any[] }) {
-    const [activeTab, setActiveTab] = useState<'listings' | 'pickups'>('listings')
+export default function ActivityDashboard({ listings, pickups, incomingRequests, chatRooms }: {
+    listings: any[],
+    pickups: any[],
+    incomingRequests: any[],
+    chatRooms: any[]
+}) {
+    const [activeTab, setActiveTab] = useState<'listings' | 'pickups' | 'chats'>('listings')
 
     return (
         <div className="space-y-8">
@@ -21,6 +27,12 @@ export default function ActivityDashboard({ listings, pickups, incomingRequests 
                     className={`py-4 px-6 text-sm font-medium ${activeTab === 'pickups' ? 'border-b-2 border-indigo-500 text-indigo-600' : 'text-gray-500 hover:text-gray-700'}`}
                 >
                     My Pickups (Requests)
+                </button>
+                <button
+                    onClick={() => setActiveTab('chats')}
+                    className={`py-4 px-6 text-sm font-medium ${activeTab === 'chats' ? 'border-b-2 border-indigo-500 text-indigo-600' : 'text-gray-500 hover:text-gray-700'}`}
+                >
+                    Chats
                 </button>
             </div>
 
@@ -137,6 +149,60 @@ export default function ActivityDashboard({ listings, pickups, incomingRequests 
                             </li>
                         ))}
                     </ul>
+                </div>
+            )}
+
+
+            {activeTab === 'chats' && (
+                <div className="bg-white shadow overflow-hidden sm:rounded-md">
+                    {chatRooms.length === 0 ? (
+                        <div className="p-8 text-center">
+                            <div className="mb-4">
+                                <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                </svg>
+                            </div>
+                            <h3 className="text-lg font-medium text-gray-900 mb-2">No Chats Yet</h3>
+                            <p className="text-sm text-gray-500 mb-4">
+                                When you accept a pickup request, a chat will automatically be created so you can coordinate with the volunteer.
+                            </p>
+                            <Link href="/">
+                                <Button className="bg-indigo-600 hover:bg-indigo-700">
+                                    Browse Food Listings
+                                </Button>
+                            </Link>
+                        </div>
+                    ) : (
+                        <ul className="divide-y divide-gray-200">
+                            {chatRooms.map((room: any) => {
+                                const otherUser = room.donor_id === room.donor.id ? room.volunteer : room.donor
+                                return (
+                                    <li key={room.id} className="p-4 hover:bg-gray-50 cursor-pointer">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-3">
+                                                <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                                                    {otherUser.avatar_url ? (
+                                                        <img src={otherUser.avatar_url} alt="Avatar" className="h-full w-full object-cover" />
+                                                    ) : (
+                                                        <span className="text-sm font-medium">{otherUser.display_name?.[0] || 'U'}</span>
+                                                    )}
+                                                </div>
+                                                <div>
+                                                    <p className="font-medium text-gray-900">{otherUser.display_name || 'User'}</p>
+                                                    <p className="text-sm text-gray-500">
+                                                        Last message: {new Date(room.last_message_at).toLocaleDateString()}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <Link href={`/chats/${room.id}`}>
+                                                <Button size="sm" variant="outline">Open Chat</Button>
+                                            </Link>
+                                        </div>
+                                    </li>
+                                )
+                            })}
+                        </ul>
+                    )}
                 </div>
             )}
         </div>

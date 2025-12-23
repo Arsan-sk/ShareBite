@@ -3,14 +3,43 @@
 import { createListing } from '../actions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { createClient } from '@/utils/supabase/client'
+import { LocationPicker } from '@/components/LocationPicker'
 
 export default function ListingForm() {
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [imageType, setImageType] = useState<'url' | 'upload'>('upload')
     const [preview, setPreview] = useState<string | null>(null)
+    const [location, setLocation] = useState<{ lat: number; lng: number; address: string; city?: string } | null>(null)
+    const [savedLocation, setSavedLocation] = useState<{ lat: number; lng: number; address: string; city?: string } | null>(null)
     const fileInputRef = useRef<HTMLInputElement>(null)
+
+    // Fetch user's saved location on mount
+    useEffect(() => {
+        const fetchUserLocation = async () => {
+            const supabase = createClient()
+            const { data: { user } } = await supabase.auth.getUser()
+
+            if (user) {
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('location_lat, location_lng, location_address, location_city')
+                    .eq('id', user.id)
+                    .single()
+
+                if (profile?.location_lat && profile?.location_lng) {
+                    setSavedLocation({
+                        lat: profile.location_lat,
+                        lng: profile.location_lng,
+                        address: profile.location_address || '',
+                        city: profile.location_city || undefined
+                    })
+                }
+            }
+        }
+        fetchUserLocation()
+    }, [])
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
@@ -58,7 +87,8 @@ export default function ListingForm() {
                         id="description"
                         name="description"
                         rows={3}
-                        className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border border-gray-300 rounded-md p-2"
+                        required
+                        className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border border-gray-300 rounded-md p-2 text-gray-900"
                         placeholder="Any details about allergens, packaging, etc."
                     />
                 </div>
@@ -153,14 +183,17 @@ export default function ListingForm() {
                 </div>
             </div>
 
-            <div>
-                <label htmlFor="address" className="block text-sm font-medium text-gray-700">
-                    Pickup Address
-                </label>
-                <div className="mt-1">
-                    <Input id="address" name="address" required placeholder="Full address for pickup" />
-                </div>
-            </div>
+            <LocationPicker
+                savedLocation={savedLocation}
+                onLocationSelect={setLocation}
+            />
+
+            {/* Hidden fields for location data */}
+            <input type="hidden" name="pickup_lat" value={location?.lat || ''} />
+            <input type="hidden" name="pickup_lng" value={location?.lng || ''} />
+            <input type="hidden" name="pickup_address" value={location?.address || ''} />
+            <input type="hidden" name="pickup_city" value={location?.city || ''} />
+            <input type="hidden" name="address" value={location?.address || ''} />
 
             <div className="pt-4 flex items-center justify-end border-t border-gray-200 mt-6 md:static fixed bottom-0 left-0 right-0 bg-white p-4 md:p-0 md:bg-transparent z-10 shadow-up md:shadow-none">
                 <Button type="submit" className="w-full md:w-auto bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6" disabled={isSubmitting}>
