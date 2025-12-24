@@ -32,7 +32,22 @@ export default async function VerificationPage() {
         .order('submitted_at', { ascending: true })
 
     // Fetch user details separately
-    let requestsWithUsers = requests || []
+    // Define the extended type for the UI
+    type RequestWithUser = {
+        id: string
+        status: string
+        submitted_at: string
+        user_id: string
+        user: {
+            id: string
+            full_name: string | null
+            email: string | null
+            role: string | null
+        } | null
+    }
+
+    let finalRequests: RequestWithUser[] = []
+
     if (requests && requests.length > 0) {
         const userIds = requests.map(r => r.user_id)
         const { data: users } = await supabaseAdmin
@@ -40,7 +55,7 @@ export default async function VerificationPage() {
             .select('id, full_name, email, role')
             .in('id', userIds)
 
-        requestsWithUsers = requests.map(req => ({
+        finalRequests = requests.map(req => ({
             ...req,
             user: users?.find(u => u.id === req.user_id) || null
         }))
@@ -55,7 +70,7 @@ export default async function VerificationPage() {
                 </div>
             </div>
 
-            {(!requestsWithUsers || requestsWithUsers.length === 0) ? (
+            {(!finalRequests || finalRequests.length === 0) ? (
                 <div className="text-center py-12 bg-white rounded-lg border-2 border-dashed border-gray-200 hover:border-green-300 transition-colors duration-300">
                     <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -89,7 +104,7 @@ export default async function VerificationPage() {
                             </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
-                            {requestsWithUsers.map((req) => (
+                            {finalRequests.map((req) => (
                                 <tr key={req.id} className="hover:bg-green-50 transition-colors duration-200 cursor-pointer">
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="text-sm font-medium text-gray-900">
