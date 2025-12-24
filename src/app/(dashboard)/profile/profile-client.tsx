@@ -130,8 +130,8 @@ export function ProfileClient({ profile, pendingRequest }: ProfileClientProps) {
                         <div className="flex justify-center mb-2">
                             <Heart className="h-6 w-6 text-orange-500" />
                         </div>
-                        <p className="text-2xl font-bold text-orange-500">{profile.meals_shared || 0}</p>
-                        <p className="text-xs text-gray-500 mt-1">Meals Shared</p>
+                        <p className="text-2xl font-bold text-orange-500">{profile.total_meals_donated || profile.meals_shared || 0}</p>
+                        <p className="text-xs text-gray-500 mt-1">Meals Donated</p>
                     </div>
                     <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl">
                         <div className="flex justify-center mb-2">

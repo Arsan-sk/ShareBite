@@ -14,6 +14,7 @@ interface User {
     created_at: string
     impact_score: number | null
     meals_shared: number | null
+    total_meals_donated: number | null
     meals_received: number | null
     phone_number: string | null
     avatar_url: string | null
@@ -163,8 +164,8 @@ export function UserManagementClient({ users }: UserManagementClientProps) {
                                 {roleLabels[user.role] || user.role}
                             </span>
                             <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${user.is_verified
-                                    ? 'bg-green-100 text-green-700'
-                                    : 'bg-gray-100 text-gray-600'
+                                ? 'bg-green-100 text-green-700'
+                                : 'bg-gray-100 text-gray-600'
                                 }`}>
                                 {user.is_verified ? '✓ Verified' : 'Unverified'}
                             </span>
@@ -179,8 +180,8 @@ export function UserManagementClient({ users }: UserManagementClientProps) {
                                     <p className="text-xs text-gray-500">Impact</p>
                                 </div>
                                 <div>
-                                    <p className="text-lg font-bold text-orange-500">{user.meals_shared || 0}</p>
-                                    <p className="text-xs text-gray-500">Shared</p>
+                                    <p className="text-lg font-bold text-orange-500">{user.total_meals_donated || user.meals_shared || 0}</p>
+                                    <p className="text-xs text-gray-500">Donated</p>
                                 </div>
                                 <div>
                                     <p className="text-lg font-bold text-blue-500">{user.meals_received || 0}</p>

@@ -13,8 +13,8 @@ export default async function LeaderboardPage() {
     const { data: topDonors } = await supabase
         .from('profiles')
         .select('*')
-        .gt('meals_shared', 0)
-        .order('impact_score', { ascending: false })
+        .or('total_meals_donated.gt.0,meals_shared.gt.0')
+        .order('total_meals_donated', { ascending: false, nullsFirst: false })
         .limit(10)
 
     // Fetch Top Volunteers (NGOs/Volunteers)
@@ -57,8 +57,8 @@ export default async function LeaderboardPage() {
                                     <p className="text-xs text-gray-500 truncate">{donor.role ? donor.role.charAt(0).toUpperCase() + donor.role.slice(1) : 'User'}</p>
                                 </div>
                                 <div className="text-right">
-                                    <p className="text-sm font-semibold text-gray-900">{donor.meals_shared || 0}</p>
-                                    <p className="text-xs text-gray-500">Meals Shared</p>
+                                    <p className="text-sm font-semibold text-gray-900">{donor.total_meals_donated || donor.meals_shared || 0}</p>
+                                    <p className="text-xs text-gray-500">Meals Donated</p>
                                 </div>
                             </li>
                         ))}
