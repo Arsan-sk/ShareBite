@@ -27,7 +27,7 @@ export function MapView({ pickupLocation, userLocation }: MapViewProps) {
                 })
 
                 // Use importLibrary for newer versions
-                const { Map } = await loader.importLibrary('maps') as google.maps.MapsLibrary
+                const { Map } = await (loader as any).importLibrary('maps') as google.maps.MapsLibrary
 
                 if (!mapRef.current) return
 
