@@ -48,8 +48,14 @@ export async function signup(formData: FormData) {
     const email = formData.get('email') as string
     const password = formData.get('password') as string
     const fullName = formData.get('fullName') as string
-    const role = formData.get('role') as string || 'resident'
+    const roleRaw = formData.get('role') as string || 'resident'
+    // Enforce lowercase and valid enum values
+    const validRoles = ['resident', 'restaurant', 'ngo', 'volunteer', 'admin']
+    let role = roleRaw.toLowerCase()
 
+    if (!validRoles.includes(role)) {
+        role = 'resident'
+    }
 
     const { data, error } = await supabase.auth.signUp({
         email,

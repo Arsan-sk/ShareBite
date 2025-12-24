@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { acceptRequest, confirmHandover, markDelivered } from './actions'
-import { useState } from 'react'
+import { useState, useTransition } from 'react'
 import Link from 'next/link'
 
 export default function ActivityDashboard({ listings, pickups, incomingRequests }: {
@@ -79,71 +79,170 @@ export default function ActivityDashboard({ listings, pickups, incomingRequests 
                     )}
 
                     {/* My Listings List */}
-                    <div className="bg-white shadow overflow-hidden sm:rounded-md">
-                        <ul className="divide-y divide-gray-200">
-                            {listings.map((listing) => (
-                                <li key={listing.id} className="p-4">
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <p className="font-medium text-gray-900">{listing.title}</p>
-                                            <p className="text-sm text-gray-500">Status: <span className="font-semibold">{listing.status.toUpperCase()}</span></p>
-                                        </div>
+                    <div className="bg-white shadow overflow-hidden sm:rounded-xl">
+                        <ul className="divide-y divide-gray-100">
+                            {listings.map((listing) => {
+                                // Find the relevant volunteer for this listing (accepted/picked_up/delivered)
+                                const activePickup = listing.pickups?.find((p: any) =>
+                                    ['accepted', 'picked_up', 'delivered'].includes(p.status)
+                                )
+                                const volunteer = activePickup?.volunteer
 
-                                        {/* Actions based on Status */}
-                                        {listing.status === 'booked' && (
-                                            <form action={() => confirmHandover(listing.id)}>
-                                                <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-white">
-                                                    Mark Picked Up (Handover)
-                                                </Button>
-                                            </form>
-                                        )}
-                                        {listing.status === 'picked_up' && (
-                                            <span className="text-sm text-yellow-600 bg-yellow-50 px-2 py-1 rounded">Out for Delivery</span>
-                                        )}
-                                        {listing.status === 'delivered' && (
-                                            <div className="flex items-center text-green-600">
-                                                <span className="mr-2">✓</span>
-                                                <span className="text-sm font-medium">Completed</span>
+                                return (
+                                    <li key={listing.id} className="p-5 hover:bg-gray-50 transition-colors">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex-1">
+                                                <div className="flex items-center justify-between mb-2">
+                                                    <h4 className="text-lg font-semibold text-gray-900">{listing.title}</h4>
+                                                    <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium border ${listing.status === 'available' ? 'bg-green-50 text-green-700 border-green-200' :
+                                                            listing.status === 'booked' ? 'bg-blue-50 text-blue-700 border-blue-200' :
+                                                                listing.status === 'picked_up' ? 'bg-yellow-50 text-yellow-700 border-yellow-200' :
+                                                                    'bg-gray-100 text-gray-700 border-gray-200'
+                                                        }`}>
+                                                        {listing.status.toUpperCase()}
+                                                    </span>
+                                                </div>
+
+                                                {/* Volunteer Info (if booked/picked up) */}
+                                                {volunteer ? (
+                                                    <div className="flex items-center mt-3 text-sm text-gray-600 bg-gray-50 p-2 rounded-lg w-fit">
+                                                        <span className="mr-2 text-gray-500 text-xs uppercase tracking-wide font-medium">Picking up by:</span>
+                                                        <div className="h-6 w-6 rounded-full bg-indigo-100 flex items-center justify-center text-xs font-medium text-indigo-700 mr-2 overflow-hidden">
+                                                            {volunteer.avatar_url ? (
+                                                                <img src={volunteer.avatar_url} alt="" className="h-full w-full object-cover" />
+                                                            ) : (
+                                                                (volunteer.display_name?.[0] || volunteer.email?.[0] || 'U').toUpperCase()
+                                                            )}
+                                                        </div>
+                                                        <span className="font-medium text-gray-900">{volunteer.display_name || volunteer.email || 'Volunteer'}</span>
+                                                    </div>
+                                                ) : listing.status === 'available' ? (
+                                                    <p className="text-sm text-gray-500 mt-1">Waiting for requests...</p>
+                                                ) : null}
                                             </div>
-                                        )}
-                                    </div>
-                                </li>
-                            ))}
+
+                                            {/* Actions */}
+                                            <div className="ml-6 flex items-center">
+                                                {listing.status === 'booked' && (
+                                                    <form action={() => confirmHandover(listing.id)}>
+                                                        <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm">
+                                                            Confirm Handover
+                                                        </Button>
+                                                    </form>
+                                                )}
+                                                {listing.status === 'picked_up' && (
+                                                    <div className="flex flex-col items-end">
+                                                        <span className="text-sm font-medium text-yellow-600 flex items-center bg-yellow-50 px-3 py-1 rounded-full">
+                                                            <span className="w-2 h-2 bg-yellow-500 rounded-full mr-2 animate-pulse" />
+                                                            Out for Delivery
+                                                        </span>
+                                                    </div>
+                                                )}
+                                                {listing.status === 'delivered' && (
+                                                    <div className="flex items-center text-green-600 bg-green-50 px-3 py-1 rounded-full">
+                                                        <span className="mr-1.5 font-bold">✓</span>
+                                                        <span className="text-sm font-medium">Completed</span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </li>
+                                )
+                            })}
                         </ul>
                     </div>
                 </div>
             )}
 
             {activeTab === 'pickups' && (
-                <div className="bg-white shadow overflow-hidden sm:rounded-md">
-                    <ul className="divide-y divide-gray-200">
-                        {pickups.map((pickup) => (
-                            <li key={pickup.id} className="p-4">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="font-medium text-gray-900">{pickup.listing.title}</p>
-                                        <p className="text-sm text-gray-500">Status: <span className="font-semibold">{pickup.status.toUpperCase()}</span></p>
-                                    </div>
+                <div className="bg-white shadow overflow-hidden sm:rounded-xl">
+                    <ul className="divide-y divide-gray-100">
+                        {pickups.map((pickup) => {
+                            const donor = pickup.listing?.donor
 
-                                    {pickup.status === 'picked_up' && (
-                                        <form action={() => markDelivered(pickup.id)}>
-                                            <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
-                                                Mark as Delivered
-                                            </Button>
-                                        </form>
-                                    )}
-                                    {pickup.status === 'delivered' && (
-                                        <div className="flex items-center text-green-600">
-                                            <span className="mr-2">✓</span>
-                                            <span className="text-sm font-medium">Delivered</span>
+                            return (
+                                <li key={pickup.id} className="p-5 hover:bg-gray-50 transition-colors">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex-1">
+                                            <div className="flex items-center justify-between mb-2">
+                                                <h4 className="text-lg font-semibold text-gray-900">{pickup.listing.title}</h4>
+                                                <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium border ${pickup.status === 'pending' ? 'bg-orange-50 text-orange-700 border-orange-200' :
+                                                        pickup.status === 'accepted' ? 'bg-blue-50 text-blue-700 border-blue-200' :
+                                                            pickup.status === 'picked_up' ? 'bg-yellow-50 text-yellow-700 border-yellow-200' :
+                                                                'bg-green-50 text-green-700 border-green-200'
+                                                    }`}>
+                                                    {pickup.status.toUpperCase()}
+                                                </span>
+                                            </div>
+
+                                            {/* Donor Info */}
+                                            {donor && (
+                                                <div className="flex items-center mt-3 text-sm text-gray-600 bg-gray-50 p-2 rounded-lg w-fit">
+                                                    <span className="mr-2 text-gray-500 text-xs uppercase tracking-wide font-medium">From Donor:</span>
+                                                    <div className="h-6 w-6 rounded-full bg-green-100 flex items-center justify-center text-xs font-medium text-green-700 mr-2 overflow-hidden">
+                                                        {donor.avatar_url ? (
+                                                            <img src={donor.avatar_url} alt="" className="h-full w-full object-cover" />
+                                                        ) : (
+                                                            (donor.display_name?.[0] || donor.email?.[0] || 'D').toUpperCase()
+                                                        )}
+                                                    </div>
+                                                    <span className="font-medium text-gray-900">{donor.display_name || donor.email || 'Donor'}</span>
+                                                </div>
+                                            )}
                                         </div>
-                                    )}
-                                </div>
-                            </li>
-                        ))}
+
+                                        <div className="ml-6 flex items-center">
+                                            {pickup.status === 'picked_up' && (
+                                                <PickupAction
+                                                    action={markDelivered}
+                                                    id={pickup.listing_id}
+                                                    label="Mark as Delivered"
+                                                />
+                                            )}
+                                            {pickup.status === 'delivered' && (
+                                                <div className="flex items-center text-green-600 bg-green-50 px-3 py-1 rounded-full">
+                                                    <span className="mr-1.5 font-bold">✓</span>
+                                                    <span className="text-sm font-medium">Delivered</span>
+                                                </div>
+                                            )}
+                                            {pickup.status === 'accepted' && (
+                                                <span className="text-sm text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
+                                                    Pickup Approved
+                                                </span>
+                                            )}
+                                            {pickup.status === 'pending' && (
+                                                <span className="text-sm text-gray-500 italic">
+                                                    Waiting approval...
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                </li>
+                            )
+                        })}
                     </ul>
                 </div>
             )}
         </div>
+    )
+}
+
+function PickupAction({ action, id, label }: { action: (id: string) => Promise<void>, id: string, label: string }) {
+    const [isPending, startTransition] = useTransition()
+
+    return (
+        <Button
+            size="sm"
+            className="bg-green-600 hover:bg-green-700 text-white disabled:opacity-50 min-w-[140px]"
+            disabled={isPending}
+            onClick={() => startTransition(() => action(id))}
+        >
+            {isPending ? (
+                <>
+                    <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
+                    Updating...
+                </>
+            ) : label}
+        </Button>
     )
 }

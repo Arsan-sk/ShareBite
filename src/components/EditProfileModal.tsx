@@ -171,19 +171,23 @@ export function EditProfileModal({ isOpen, onClose, profile, onSave }: EditProfi
                                 <p className="text-sm font-medium text-gray-700 mb-3 text-center">Change Profile Photo</p>
                                 <div className="flex gap-2 justify-center">
                                     <Button
-                                        variant="outline"
+                                        variant={null}
                                         size="sm"
                                         onClick={() => setAvatarMode('url')}
-                                        className={avatarMode === 'url' ? 'border-green-500 bg-green-50' : ''}
+                                        className={`border px-3 transition-colors ${avatarMode === 'url'
+                                                ? 'border-green-500 bg-green-50 text-green-700'
+                                                : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-100'
+                                            }`}
                                     >
                                         <LinkIcon className="h-4 w-4 mr-1" />
                                         URL
                                     </Button>
                                     <Button
-                                        variant="outline"
+                                        variant={null}
                                         size="sm"
                                         onClick={() => fileInputRef.current?.click()}
                                         disabled={uploadingAvatar}
+                                        className="border border-gray-200 bg-white text-gray-700 hover:bg-gray-100 px-3"
                                     >
                                         {uploadingAvatar ? (
                                             <Loader2 className="h-4 w-4 mr-1 animate-spin" />

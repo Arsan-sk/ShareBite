@@ -1,9 +1,7 @@
 export function VerifiedBadge({ className = "" }: { className?: string }) {
     return (
         <svg
-            className={`inline-block ${className}`}
-            width="18"
-            height="18"
+            className={`inline-block w-4 h-4 ${className}`}
             viewBox="0 0 18 18"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"

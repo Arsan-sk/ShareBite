@@ -1,95 +1,83 @@
 import { createClient } from '@/utils/supabase/server'
 import Link from 'next/link'
-import { formatDistanceToNow } from 'date-fns'
-import { VerifiedBadge } from '@/components/VerifiedBadge'
+import { getPersonalizedFeed, ListingWithPriority } from '@/utils/feed'
+import { ListingCard } from '@/components/ListingCard'
 
 export default async function FeedPage() {
     const supabase = await createClient()
 
     const { data: { user } } = await supabase.auth.getUser()
 
-    const { data: listings } = await supabase
+    // Fetch user's location for personalized distance scoring
+    let userLocation = { lat: null as number | null, lng: null as number | null }
+    if (user) {
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('location_lat, location_lng')
+            .eq('id', user.id)
+            .single()
+
+        if (profile?.location_lat && profile?.location_lng) {
+            userLocation = {
+                lat: profile.location_lat,
+                lng: profile.location_lng
+            }
+        }
+    }
+
+    // Fetch all available listings
+    const { data: rawListings } = await supabase
         .from('listings')
         .select(`
-      *,
-      donor:profiles(*)
-    `)
+            *,
+            donor:profiles(id, display_name, organization_name, avatar_url, is_verified, role)
+        `)
         .eq('status', 'available')
-        .neq('donor_id', user?.id) // Hide own listings
-        .order('created_at', { ascending: false })
+        .neq('donor_id', user?.id || '') // Hide own listings
+        .gt('expiry_date', new Date().toISOString()) // Only show non-expired
+
+    // Apply priority scoring and sort
+    const listings: ListingWithPriority[] = rawListings
+        ? getPersonalizedFeed(rawListings, userLocation)
+        : []
 
     return (
-        <div className="px-4 py-6 sm:px-0">
-            <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-bold text-gray-900">Live Food Feed</h1>
-                <Link href="/listings/create" className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+                <div>
+                    <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Live Food Feed</h1>
+                    <p className="text-gray-500 mt-2 text-sm max-w-lg">
+                        Real-time listings personalized for you based on urgency and location.
+                        Help us rescue food before it expires!
+                    </p>
+                </div>
+                <Link
+                    href="/listings/create"
+                    className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-sm font-medium rounded-xl shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 transform hover:-translate-y-0.5"
+                >
                     + Share Food
                 </Link>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {listings?.map((listing: any) => (
-                    <div key={listing.id} className="bg-white overflow-hidden shadow rounded-lg flex flex-col">
-                        <div className="p-5 flex-1">
-                            <div className="flex items-center">
-                                <div className="flex-shrink-0">
-                                    {/* Avatar logic */}
-                                    <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-xs overflow-hidden">
-                                        {listing.donor?.avatar_url ? (
-                                            <img src={listing.donor.avatar_url} alt="Ava" className="h-full w-full object-cover" />
-                                        ) : (
-                                            listing.donor?.display_name?.[0] || 'U'
-                                        )}
-                                    </div>
-                                </div>
-                                <div className="ml-3">
-                                    <p className="text-sm font-medium text-gray-900 flex items-center gap-1">
-                                        {listing.donor?.organization_name || listing.donor?.display_name || 'Anonymous'}
-                                        {listing.donor?.is_verified && <VerifiedBadge />}
-                                    </p>
-                                    <p className="text-xs text-gray-500">
-                                        {/* Distance would require geo calculation, just showing time for now */}
-                                        {listing.created_at ? formatDistanceToNow(new Date(listing.created_at), { addSuffix: true }) : 'Just now'}
-                                    </p>
-                                </div>
-                            </div>
-
-                            {listing.image_url && (
-                                <div className="mt-4 h-48 w-full bg-gray-100 rounded-md overflow-hidden">
-                                    <img
-                                        src={listing.image_url}
-                                        alt={listing.title}
-                                        className="h-full w-full object-cover"
-                                    />
-                                </div>
-                            )}
-
-                            <div className="mt-4">
-                                <h3 className="text-lg font-medium text-gray-900">{listing.title}</h3>
-                                <div className="mt-1 text-sm text-gray-500 space-y-1">
-                                    <p>{listing.description}</p>
-                                    <p className="font-semibold text-green-700">Qty: {listing.quantity}</p>
-                                    <p className="text-xs">Expires: {new Date(listing.expiry_date).toLocaleString()}</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="bg-gray-50 px-5 py-3 mt-auto">
-                            <div className="text-sm">
-                                {/* Link to details page (TODO) */}
-                                <Link href={`/listings/${listing.id}`} className="font-medium text-green-700 hover:text-green-900 cursor-pointer">
-                                    Request Pickup
-                                </Link>
-                            </div>
-                        </div>
-                    </div>
+            {/* Grid Layout - Wider Cards */}
+            <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
+                {listings?.map((listing) => (
+                    <ListingCard key={listing.id} listing={listing} />
                 ))}
 
                 {!listings?.length && (
-                    <div className="bg-white overflow-hidden shadow rounded-lg col-span-full">
-                        <div className="p-5">
-                            <div className="h-24 bg-gray-100 flex items-center justify-center text-gray-400">
-                                No active listings. Be the first to share!
-                            </div>
+                    <div className="col-span-full py-16 text-center bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
+                        <div className="mx-auto h-12 w-12 text-gray-300">
+                            <svg className="h-full w-full" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                            </svg>
+                        </div>
+                        <h3 className="mt-2 text-sm font-medium text-gray-900">No active listings</h3>
+                        <p className="mt-1 text-sm text-gray-500">Be the first to share food in your area!</p>
+                        <div className="mt-6">
+                            <Link href="/listings/create" className="text-sm font-medium text-green-600 hover:text-green-500">
+                                Share Food Now &rarr;
+                            </Link>
                         </div>
                     </div>
                 )}

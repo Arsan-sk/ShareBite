@@ -58,6 +58,18 @@ export function ChatBadge({ userId, isActive }: ChatBadgeProps) {
                     fetchUnreadCount()
                 }
             )
+            .on(
+                'postgres_changes',
+                {
+                    event: 'UPDATE',
+                    schema: 'public',
+                    table: 'chat_messages'
+                },
+                () => {
+                    // Refetch on message read status change
+                    fetchUnreadCount()
+                }
+            )
             .subscribe()
 
         return () => {

@@ -135,14 +135,18 @@ security definer
 as $$
 declare 
     v_donor_id uuid;
+    v_room_id uuid;
+    v_listing_title text;
+    v_pickup_id uuid;
 begin
-  -- Get donor id for notification
-  select donor_id into v_donor_id from public.listings where id = p_listing_id;
+  -- Get donor id and title
+  select donor_id, title into v_donor_id, v_listing_title from public.listings where id = p_listing_id;
 
-  -- Update Pickup
+  -- Update Pickup and get ID
   update public.pickups 
   set status = 'delivered', completed_at = now()
-  where listing_id = p_listing_id and volunteer_id = p_volunteer_id and status = 'picked_up';
+  where listing_id = p_listing_id and volunteer_id = p_volunteer_id and status = 'picked_up'
+  returning id into v_pickup_id;
   
   if not found then
     return false;
@@ -171,6 +175,23 @@ begin
     'Your food donation has need delivered! +5 Impact Score.',
     '/activity'
   );
+
+  -- CHAT: Send "Delivery Complete" System Message
+  select id into v_room_id from public.chat_rooms where donor_id = v_donor_id and volunteer_id = p_volunteer_id;
+  
+  if v_room_id is not null then
+      insert into public.chat_messages (room_id, sender_id, message_type, content, pickup_id)
+      values (
+          v_room_id,
+          p_volunteer_id, -- Sent by volunteer (system msg)
+          'system',
+          '✅ Delivery Complete! "' || v_listing_title || '" has been successfully delivered. Thank you! 🙏',
+          v_pickup_id
+      );
+      
+      -- Update room activity
+      update public.chat_rooms set last_message_at = now() where id = v_room_id;
+  end if;
 
   return true;
 end;
