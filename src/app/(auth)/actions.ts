@@ -38,8 +38,8 @@ export async function login(formData: FormData) {
         return redirect(`/login?message=${encodeURIComponent(error.message)}`)
     }
 
-    revalidatePath('/', 'layout')
-    redirect('/')
+    revalidatePath('/feed', 'layout')
+    redirect('/feed')
 }
 
 export async function signup(formData: FormData) {
@@ -81,7 +81,7 @@ export async function signup(formData: FormData) {
         return redirect('/signup?message=User already registered')
     }
 
-    revalidatePath('/', 'layout')
+    revalidatePath('/feed', 'layout')
     redirect('/login?message=Check email to continue sign in process')
 }
 

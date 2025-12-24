@@ -84,12 +84,32 @@ export async function updateSession(request: NextRequest) {
       }
     }
 
-    // 3. Regular User Rules (Protect Admin Path)
-    if (!isAdmin && isOnAdminPath) {
-      const url = request.nextUrl.clone()
-      url.pathname = '/' // Kick back to home
-      return NextResponse.redirect(url)
+    // 3. Regular User Rules (Protect Admin Path & Redirect Root)
+    if (!isAdmin) {
+      if (isOnAdminPath) {
+        const url = request.nextUrl.clone()
+        url.pathname = '/' // Kick back to home -> which will redirect to /feed
+        return NextResponse.redirect(url)
+      }
+
+      // Redirect logged-in users from Landing Page to Feed
+      // User specifically requested this behavior: "even if its / path after login its should be feed"
+      if (request.nextUrl.pathname === '/') {
+        if (user.role === 'authenticated') {
+          const url = request.nextUrl.clone()
+          url.pathname = '/feed'
+          return NextResponse.redirect(url)
+        }
+      }
     }
+  }
+
+  // 4. Protect Private Routes (Guest -> Landing Page)
+  // If user is NOT logged in, and tries to visit /feed, redirect to /
+  if (!user && request.nextUrl.pathname.startsWith('/feed')) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/'
+    return NextResponse.redirect(url)
   }
 
   return supabaseResponse
