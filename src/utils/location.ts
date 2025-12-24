@@ -119,7 +119,7 @@ export async function geocodeAddress(address: string): Promise<Location | null> 
                 lat: result.geometry.location.lat,
                 lng: result.geometry.location.lng,
                 address: result.formatted_address,
-                city: extractCity(result.address_components)
+                city: extractCity(result.address_components) || undefined
             }
             console.log('[geocodeAddress] Success:', returnValue)
             return returnValue

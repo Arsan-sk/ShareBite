@@ -1,8 +1,6 @@
 'use client'
 
 import * as React from 'react'
-import * as TabsPrimitive from '@radix-ui/react-tabs'
-import { cn } from '@/lib/utils'
 
 // Since we might not have radix installed, let's create a pure Tailwind version for simplicity and speed (no npm install needed).
 // Actually, user might not have Radix.
