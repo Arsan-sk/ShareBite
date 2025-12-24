@@ -56,7 +56,7 @@ export default async function VerificationPage() {
             </div>
 
             {(!requestsWithUsers || requestsWithUsers.length === 0) ? (
-                <div className="text-center py-12 bg-white rounded-lg border border-dashed border-gray-300">
+                <div className="text-center py-12 bg-white rounded-lg border-2 border-dashed border-gray-200 hover:border-green-300 transition-colors duration-300">
                     <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
@@ -64,7 +64,7 @@ export default async function VerificationPage() {
                     <p className="mt-1 text-sm text-gray-500">All caught up! Check back later.</p>
                 </div>
             ) : (
-                <div className="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden">
+                <div className="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-200">
                     <table className="min-w-full divide-y divide-gray-200">
                         <thead className="bg-gray-50">
                             <tr>
@@ -90,7 +90,7 @@ export default async function VerificationPage() {
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
                             {requestsWithUsers.map((req) => (
-                                <tr key={req.id} className="hover:bg-gray-50 transition-colors">
+                                <tr key={req.id} className="hover:bg-green-50 transition-colors duration-200 cursor-pointer">
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="text-sm font-medium text-gray-900">
                                             {req.user?.full_name || 'Unknown User'}
@@ -113,9 +113,10 @@ export default async function VerificationPage() {
                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <Link
                                             href={`/admin/verification/${req.id}`}
-                                            className="text-indigo-600 hover:text-indigo-900 font-medium"
+                                            className="text-green-600 hover:text-green-700 font-medium transition-colors inline-flex items-center gap-1 group"
                                         >
-                                            Review Details →
+                                            Review Details
+                                            <span className="group-hover:translate-x-0.5 transition-transform">→</span>
                                         </Link>
                                     </td>
                                 </tr>

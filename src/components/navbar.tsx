@@ -56,7 +56,7 @@ export default function Navbar({ user }: { user: User }) {
                             {user.email}
                         </span>
                         <form action={signout}>
-                            <Button variant="outline" size="sm" className="hover:bg-gray-100 transition-colors">
+                            <Button variant={null} size="sm" className="bg-red-400 hover:bg-red-500 text-white transition-colors">
                                 Sign out
                             </Button>
                         </form>

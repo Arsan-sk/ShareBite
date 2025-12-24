@@ -37,7 +37,7 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
                     <p className="text-sm text-gray-500">Review all information carefully before making a decision.</p>
                 </div>
                 <Link href="/admin/verification">
-                    <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
+                    <Button variant={null} className="border border-green-400 text-green-600 hover:bg-green-50 transition-colors">
                         ← Back to List
                     </Button>
                 </Link>
@@ -45,8 +45,8 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Left: Applicant Information */}
-                <div className="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden">
-                    <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
+                <div className="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-200">
+                    <div className="px-6 py-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-200">
                         <h3 className="text-lg font-semibold text-gray-900">Applicant Information</h3>
                         <p className="text-sm text-gray-500 mt-1">Personal and organizational details</p>
                     </div>
@@ -87,8 +87,8 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
                 </div>
 
                 {/* Right: Document Viewer & Actions */}
-                <div className="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden flex flex-col">
-                    <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
+                <div className="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden flex flex-col hover:shadow-md transition-shadow duration-200">
+                    <div className="px-6 py-4 bg-gradient-to-r from-green-50 to-emerald-50 border-b border-gray-200">
                         <h3 className="text-lg font-semibold text-gray-900">Proof Document</h3>
                         <p className="text-sm text-gray-500 mt-1">ID Card, License, or Registration Certificate</p>
                     </div>
@@ -109,8 +109,8 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
                             }} className="flex-1">
                                 <Button
                                     type="submit"
-                                    variant="destructive"
-                                    className="w-full bg-red-600 hover:bg-red-700"
+                                    variant={null}
+                                    className="w-full bg-red-500 hover:bg-red-600 text-white transition-colors"
                                     size="lg"
                                 >
                                     Reject Request
@@ -122,7 +122,8 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
                             }} className="flex-1">
                                 <Button
                                     type="submit"
-                                    className="w-full bg-green-600 hover:bg-green-700"
+                                    variant={null}
+                                    className="w-full bg-green-500 hover:bg-green-600 text-white transition-colors"
                                     size="lg"
                                 >
                                     Approve & Verify

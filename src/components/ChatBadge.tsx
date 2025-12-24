@@ -66,8 +66,8 @@ export function ChatBadge({ userId, isActive }: ChatBadgeProps) {
     }, [userId, supabase])
 
     const linkClass = `inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium relative ${isActive
-            ? 'border-green-500 text-gray-900'
-            : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+        ? 'border-green-500 text-gray-900'
+        : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
         }`
 
     return (
@@ -75,7 +75,7 @@ export function ChatBadge({ userId, isActive }: ChatBadgeProps) {
             <MessageCircle className="h-4 w-4 mr-1" />
             Chats
             {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 min-w-5 flex items-center justify-center px-1 animate-pulse">
+                <span className="absolute top-1 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 min-w-5 flex items-center justify-center px-1 animate-pulse">
                     {unreadCount > 9 ? '9+' : unreadCount}
                 </span>
             )}
