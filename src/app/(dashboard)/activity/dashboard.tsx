@@ -86,11 +86,15 @@ export default function ActivityDashboard({ listings, pickups, incomingRequests 
                                     No listings yet. Start sharing food to see them here!
                                 </li>
                             ) : listings.map((listing) => {
-                                // Simplified for d4d891a compatibility: No volunteer lookup
+                                // Find active volunteer for name display
+                                const activePickup = listing.pickups?.find((p: any) =>
+                                    ['accepted', 'picked_up', 'delivered'].includes(p.status)
+                                )
+                                const volunteer = activePickup?.volunteer
                                 const status = listing.status;
 
                                 return (
-                                    <li key={listing.id} className="p-5 hover:bg-gray-50 transition-colors">
+                                    <li key={listing.id} className="p-6 hover:bg-gradient-to-r hover:from-gray-50 hover:to-white transition-all duration-200 border-b-2 border-gray-200 last:border-b-0">
                                         <div className="flex items-center justify-between">
                                             <div className="flex-1">
                                                 <div className="flex items-center justify-between mb-2">
@@ -102,6 +106,13 @@ export default function ActivityDashboard({ listings, pickups, incomingRequests 
                                                         </span>
                                                     )}
                                                 </div>
+
+                                                {/* Show volunteer name if not available */}
+                                                {volunteer && status !== 'available' && (
+                                                    <p className="text-xs text-gray-500 mt-2">
+                                                        Volunteer: <span className="font-medium text-gray-700">{volunteer.display_name || volunteer.email}</span>
+                                                    </p>
+                                                )}
                                             </div>
 
                                             {/* Actions */}
@@ -143,15 +154,20 @@ export default function ActivityDashboard({ listings, pickups, incomingRequests 
                                 No pickups yet. Request food from the feed to see them here!
                             </li>
                         ) : pickups.map((pickup) => {
-                            // Simplified: No donor lookup
+                            const donor = pickup.listing?.donor
                             return (
-                                <li key={pickup.id} className="p-5 hover:bg-gray-50 transition-colors">
+                                <li key={pickup.id} className="p-6 hover:bg-gradient-to-r hover:from-gray-50 hover:to-white transition-all duration-200 border-b-2 border-gray-200 last:border-b-0">
                                     <div className="flex items-center justify-between">
                                         <div className="flex-1">
-                                            <div className="flex items-center gap-3">
-                                                <h4 className="text-lg font-semibold text-gray-900">{pickup.listing.title}</h4>
+                                            <div>
+                                                <h4 className="text-lg font-semibold text-gray-900 mb-1">{pickup.listing.title}</h4>
+                                                {/* Show donor name */}
+                                                {donor && (
+                                                    <p className="text-xs text-gray-500">
+                                                        From: <span className="font-medium text-gray-700">{donor.display_name || donor.email}</span>
+                                                    </p>
+                                                )}
                                             </div>
-                                            {/* Note: Removed "From Donor" section as requested for cleaner UI */}
                                         </div>
 
                                         <div className="ml-6 flex items-center gap-4">

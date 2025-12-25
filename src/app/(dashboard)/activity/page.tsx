@@ -10,19 +10,29 @@ export default async function ActivityPage() {
         redirect('/login')
     }
 
-    // 1. Fetch My Listings (Simple fetch like d4d891a)
+    // 1. Fetch My Listings (with volunteer names for display)
     const { data: listings } = await supabase
         .from('listings')
-        .select('*')
+        .select(`
+            *,
+            pickups(
+                status,
+                volunteer_id,
+                volunteer:profiles!volunteer_id(display_name, email, avatar_url)
+            )
+        `)
         .eq('donor_id', user.id)
         .order('created_at', { ascending: false })
 
-    // 2. Fetch My Pickups (As Volunteer)
+    // 2. Fetch My Pickups (with donor names for display)
     const { data: pickups } = await supabase
         .from('pickups')
         .select(`
             *,
-            listing:listings(*)
+            listing:listings(
+                *,
+                donor:profiles!donor_id(display_name, email, avatar_url)
+            )
         `)
         .eq('volunteer_id', user.id)
         .order('created_at', { ascending: false })
