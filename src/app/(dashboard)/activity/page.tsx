@@ -10,28 +10,19 @@ export default async function ActivityPage() {
         redirect('/login')
     }
 
-    // 1. Fetch My Listings (with accepted/picked_up volunteer info)
+    // 1. Fetch My Listings (Simple fetch like d4d891a)
     const { data: listings } = await supabase
         .from('listings')
-        .select(`
-            *,
-            pickups:pickups(
-                status,
-                volunteer:profiles(*)
-            )
-        `)
+        .select('*')
         .eq('donor_id', user.id)
         .order('created_at', { ascending: false })
 
-    // 2. Fetch My Pickups (As Volunteer) - Get Listing AND Donor info
+    // 2. Fetch My Pickups (As Volunteer)
     const { data: pickups } = await supabase
         .from('pickups')
         .select(`
             *,
-            listing:listings(
-                *,
-                donor:profiles(*)
-            )
+            listing:listings(*)
         `)
         .eq('volunteer_id', user.id)
         .order('created_at', { ascending: false })
@@ -46,6 +37,13 @@ export default async function ActivityPage() {
         `)
         .eq('status', 'pending')
         .filter('listing.donor_id', 'eq', user.id)
+
+    console.log('--- Activity Page Debug ---')
+    console.log('User:', user.id)
+    console.log('Listings Count:', listings?.length, listings)
+    console.log('Pickups Count:', pickups?.length, pickups)
+    console.log('Incoming Requests:', incomingRequests?.length)
+    console.log('--- End Debug ---')
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

@@ -7,9 +7,14 @@ import { useState, useRef, useEffect } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { MapPin, Loader2, Camera, Link as LinkIcon, Upload, Calendar, Clock, Utensils, Package, Scale } from 'lucide-react'
 import { reverseGeocode } from '@/utils/location'
+import { SimpleToast } from '@/components/ui/simple-toast'
+import { useRouter } from 'next/navigation'
 
 export default function ListingForm() {
+    const router = useRouter()
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const [showToast, setShowToast] = useState(false)
+
     const [imageType, setImageType] = useState<'url' | 'upload'>('upload')
     const [preview, setPreview] = useState<string | null>(null)
 
@@ -110,6 +115,11 @@ export default function ListingForm() {
         setIsSubmitting(true)
         try {
             await createListing(formData)
+            setShowToast(true)
+            // Optional: Redirect or reset form after delay
+            setTimeout(() => {
+                router.push('/feed') // Or remain on page
+            }, 2000)
         } catch (e) {
             console.error(e)
         } finally {
@@ -136,6 +146,12 @@ export default function ListingForm() {
 
     return (
         <form action={handleSubmit} className="space-y-6 pb-20">
+            <SimpleToast
+                message="Listing posted successfully! 🍽️"
+                isVisible={showToast}
+                onClose={() => setShowToast(false)}
+            />
+
             {/* Section: Food Details */}
             <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-200">
                 <div className="px-5 py-4 bg-gradient-to-r from-green-50 to-emerald-50 border-b border-gray-100">
