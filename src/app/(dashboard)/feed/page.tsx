@@ -10,6 +10,8 @@ export default async function FeedPage() {
 
     // Fetch user's location for personalized distance scoring
     let userLocation = { lat: null as number | null, lng: null as number | null }
+    let byteMateIds: string[] = []
+
     if (user) {
         const { data: profile } = await supabase
             .from('profiles')
@@ -23,6 +25,14 @@ export default async function FeedPage() {
                 lng: profile.location_lng
             }
         }
+
+        // Fetch ByteMates for feed personalization
+        const { data: bytemates } = await supabase
+            .from('bytemates')
+            .select('following_id')
+            .eq('follower_id', user.id)
+
+        byteMateIds = bytemates?.map(b => b.following_id) || []
     }
 
     // Fetch all available listings
@@ -38,7 +48,7 @@ export default async function FeedPage() {
 
     // Apply priority scoring and sort
     const listings: ListingWithPriority[] = rawListings
-        ? getPersonalizedFeed(rawListings, userLocation)
+        ? getPersonalizedFeed(rawListings, userLocation, byteMateIds)
         : []
 
     return (

@@ -41,6 +41,9 @@ export default function Navbar({ user }: { user: User }) {
                             <Link href="/activity" className={linkClass('/activity')}>
                                 Activity
                             </Link>
+                            <Link href="/search" className={linkClass('/search')}>
+                                🔍 Search
+                            </Link>
                             <ChatBadge userId={user.id} isActive={isActive('/chats')} />
                             <Link href="/leaderboard" className={linkClass('/leaderboard')}>
                                 Leaderboard
