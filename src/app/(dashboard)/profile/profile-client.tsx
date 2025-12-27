@@ -6,6 +6,7 @@ import { EditProfileModal } from '@/components/EditProfileModal'
 import { VerifiedBadge } from '@/components/VerifiedBadge'
 import { Edit3, MapPin, Calendar, Mail, Phone, Briefcase, Award, Heart, Package } from 'lucide-react'
 import Link from 'next/link'
+import { signout } from '@/app/(auth)/actions'
 
 interface ProfileClientProps {
     profile: any
@@ -203,6 +204,18 @@ export function ProfileClient({ profile, pendingRequest }: ProfileClientProps) {
                         </div>
                     )}
                 </div>
+            </div>
+
+            {/* Sign Out Button */}
+            <div className="mt-8 flex justify-center">
+                <form action={signout} className="w-full">
+                    <Button
+                        variant={null}
+                        className="w-full bg-red-400 hover:bg-red-500 text-white transition-colors py-6 text-lg rounded-xl shadow-sm"
+                    >
+                        Sign Out
+                    </Button>
+                </form>
             </div>
 
             {/* Edit Modal */}

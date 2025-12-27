@@ -42,24 +42,25 @@ export default function Navbar({ user }: { user: User }) {
                                 Activity
                             </Link>
                             <ChatBadge userId={user.id} isActive={isActive('/chats')} />
-                            <Link href="/profile" className={linkClass('/profile')}>
-                                Profile
-                            </Link>
                             <Link href="/leaderboard" className={linkClass('/leaderboard')}>
                                 Leaderboard
                             </Link>
                         </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-4">
                         <NotificationDropdown userId={user.id} />
-                        <span className="text-sm text-gray-500 hidden md:block">
-                            {user.email}
-                        </span>
-                        <form action={signout}>
-                            <Button variant={null} size="sm" className="bg-red-400 hover:bg-red-500 text-white transition-colors">
-                                Sign out
-                            </Button>
-                        </form>
+
+                        <Link href="/profile" className="flex items-center group">
+                            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center overflow-hidden ring-2 ring-white shadow-md transition-all group-hover:ring-green-400">
+                                {user.user_metadata?.avatar_url ? (
+                                    <img src={user.user_metadata.avatar_url} alt="Profile" className="h-full w-full object-cover" />
+                                ) : (
+                                    <span className="text-lg font-bold text-white">
+                                        {(user.email?.[0] || 'U').toUpperCase()}
+                                    </span>
+                                )}
+                            </div>
+                        </Link>
                     </div>
                 </div>
             </div>
