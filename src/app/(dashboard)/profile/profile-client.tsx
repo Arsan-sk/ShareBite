@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { EditProfileModal } from '@/components/EditProfileModal'
 import { VerifiedBadge } from '@/components/VerifiedBadge'
-import { Edit3, MapPin, Calendar, Mail, Phone, Briefcase, Award, Heart, Package } from 'lucide-react'
+import { Edit3, MapPin, Calendar, Mail, Phone, Briefcase, Award, Heart, UserPlus } from 'lucide-react'
 import Link from 'next/link'
 import { signout } from '@/app/(auth)/actions'
 
@@ -136,10 +136,10 @@ export function ProfileClient({ profile, pendingRequest }: ProfileClientProps) {
                     </div>
                     <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl">
                         <div className="flex justify-center mb-2">
-                            <Package className="h-6 w-6 text-blue-500" />
+                            <UserPlus className="h-6 w-6 text-blue-500" />
                         </div>
-                        <p className="text-2xl font-bold text-blue-500">{profile.meals_received || 0}</p>
-                        <p className="text-xs text-gray-500 mt-1">Meals Received</p>
+                        <p className="text-2xl font-bold text-blue-500">{profile.bytemate_count || 0}</p>
+                        <p className="text-xs text-gray-500 mt-1">ByteMates</p>
                     </div>
                 </div>
             </div>

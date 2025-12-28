@@ -2,7 +2,7 @@
 
 import { VerifiedBadge } from '@/components/VerifiedBadge'
 import { ByteMateButton } from '@/components/ByteMateButton'
-import { MapPin, Calendar, Briefcase, Award, Heart, Package, MessageCircle } from 'lucide-react'
+import { MapPin, Calendar, Briefcase, Award, Heart, UserPlus, MessageCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 
@@ -136,7 +136,7 @@ export function PublicProfileClient({ profile, recentListings, byteMateStatus }:
                     </div>
                     <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl">
                         <div className="flex justify-center mb-2">
-                            <Package className="h-6 w-6 text-blue-500" />
+                            <UserPlus className="h-6 w-6 text-blue-500" />
                         </div>
                         <p className="text-2xl font-bold text-blue-500">{profile.bytemate_count || 0}</p>
                         <p className="text-xs text-gray-500 mt-1">ByteMates</p>
