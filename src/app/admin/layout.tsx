@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { signout } from '@/app/(auth)/actions'
 import { Button } from '@/components/ui/button'
 import { AdminNavLinks } from '@/components/AdminNavLinks'
+import { AdminMobileNav } from '@/components/AdminMobileNav'
 
 export default async function AdminLayout({
   children,
@@ -25,7 +26,8 @@ export default async function AdminLayout({
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans text-gray-900">
-      <nav className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-40">
+      {/* Desktop Navigation */}
+      <nav className="hidden md:block bg-white border-b border-gray-200 shadow-sm sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex">
@@ -49,7 +51,25 @@ export default async function AdminLayout({
         </div>
       </nav>
 
-      <main className="py-10">
+      {/* Mobile Header */}
+      <div className="md:hidden bg-white border-b border-gray-200 shadow-sm sticky top-0 z-40">
+        <div className="flex items-center justify-between h-14 px-4">
+          <div className="w-12" /> {/* Spacer for hamburger */}
+          <Link href="/admin/dashboard" className="text-lg font-bold text-red-600">
+            Admin Panel
+          </Link>
+          <form action={signout}>
+            <Button variant={null} size="sm" className="bg-red-400 hover:bg-red-500 text-white text-xs px-3 py-1">
+              Logout
+            </Button>
+          </form>
+        </div>
+      </div>
+
+      {/* Mobile Navigation */}
+      <AdminMobileNav />
+
+      <main className="py-6 md:py-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {children}
         </div>
