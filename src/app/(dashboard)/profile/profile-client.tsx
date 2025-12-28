@@ -32,7 +32,7 @@ export function ProfileClient({ profile, pendingRequest }: ProfileClientProps) {
     }
 
     return (
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-8">
             {/* Profile Header Card */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                 {/* Cover/Banner */}

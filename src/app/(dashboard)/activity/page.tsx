@@ -56,8 +56,8 @@ export default async function ActivityPage() {
     console.log('--- End Debug ---')
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <h1 className="text-2xl font-bold text-gray-900 mb-8">My Food Journey</h1>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-8">
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6 md:mb-8">My Activity</h1>
             <ActivityDashboard
                 listings={listings || []}
                 pickups={pickups || []}

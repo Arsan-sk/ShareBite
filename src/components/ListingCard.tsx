@@ -3,6 +3,7 @@
 import React from 'react'
 import { VerifiedBadge } from './VerifiedBadge'
 import { MapPin, Package, Clock, Calendar } from 'lucide-react'
+import { motion } from 'framer-motion'
 
 export interface ListingCardProps {
     listing: any
@@ -13,7 +14,13 @@ export function ListingCard({ listing }: ListingCardProps) {
     if (!listing.priorityInfo) return null
 
     return (
-        <div className="group relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full border border-gray-100">
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            whileHover={{ y: -4 }}
+            className="group relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300 flex flex-col h-full border border-gray-100"
+        >
 
             {/* Header: User Info - Highlighted */}
             <div className="px-4 py-3 flex items-center gap-3 border-b border-gray-50 bg-white/50 backdrop-blur-sm z-10">
@@ -139,7 +146,7 @@ export function ListingCard({ listing }: ListingCardProps) {
                     Request Pickup
                 </a>
             </div>
-        </div>
+        </motion.div>
     )
 }
 

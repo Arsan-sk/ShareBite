@@ -70,7 +70,7 @@ export function ByteMateButton({
                 disabled={isPending}
                 size="sm"
                 variant={null}
-                className={`${buttonContent.className} transition-colors`}
+                className={`${buttonContent.className} transition-colors min-h-[44px]`}
             >
                 {buttonContent.icon}
                 <span className="ml-1.5">{buttonContent.text}</span>
@@ -83,7 +83,7 @@ export function ByteMateButton({
             onClick={handleToggle}
             disabled={isPending}
             variant={null}
-            className={`${buttonContent.className} transition-colors font-medium`}
+            className={`${buttonContent.className} transition-colors font-medium min-h-[44px] md:min-h-[40px]`}
         >
             {buttonContent.icon}
             <span className="ml-2">{buttonContent.text}</span>

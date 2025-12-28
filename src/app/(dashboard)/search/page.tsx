@@ -39,15 +39,15 @@ export default function SearchPage() {
     const showSuggested = !query.trim() && suggested.length > 0
 
     return (
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-8">
             {/* Header */}
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">Search Users</h1>
-                <p className="text-gray-500">Find and connect with other ShareBite members</p>
+            <div className="mb-6 md:mb-8">
+                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Search Users</h1>
+                <p className="text-sm md:text-base text-gray-500">Find and connect with other ShareBite members</p>
             </div>
 
             {/* Search Input */}
-            <div className="mb-8">
+            <div className="mb-6 md:mb-8">
                 <div className="relative">
                     <SearchIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                     <Input
@@ -55,7 +55,7 @@ export default function SearchPage() {
                         placeholder="Search by name..."
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
-                        className="pl-12 pr-4 py-6 text-lg rounded-xl border-2 border-gray-200 focus:border-green-400 focus:ring-green-400"
+                        className="pl-12 pr-4 py-5 md:py-6 text-base md:text-lg rounded-xl border-2 border-gray-200 focus:border-green-400 focus:ring-green-400"
                     />
                 </div>
                 {isSearching && (

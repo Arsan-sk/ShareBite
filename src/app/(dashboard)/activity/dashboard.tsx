@@ -14,19 +14,30 @@ export default function ActivityDashboard({ listings, pickups, incomingRequests 
 
     return (
         <div className="space-y-8">
-            <div className="flex border-b border-gray-200">
-                <button
-                    onClick={() => setActiveTab('listings')}
-                    className={`py-4 px-6 text-sm font-medium transition-colors ${activeTab === 'listings' ? 'border-b-2 border-green-500 text-green-600' : 'text-gray-500 hover:text-gray-700'}`}
-                >
-                    My Listings (Donations)
-                </button>
-                <button
-                    onClick={() => setActiveTab('pickups')}
-                    className={`py-4 px-6 text-sm font-medium transition-colors ${activeTab === 'pickups' ? 'border-b-2 border-green-500 text-green-600' : 'text-gray-500 hover:text-gray-700'}`}
-                >
-                    My Pickups (Requests)
-                </button>
+            {/* Tabs */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div className="border-b border-gray-200">
+                    <nav className="flex -mb-px overflow-x-auto">
+                        <button
+                            onClick={() => setActiveTab('listings')}
+                            className={`flex-1 min-w-[120px] py-3 md:py-4 px-4 text-center border-b-2 font-medium text-sm transition-colors ${activeTab === 'listings'
+                                    ? 'border-green-500 text-green-600'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                }`}
+                        >
+                            My Listings
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('pickups')}
+                            className={`flex-1 min-w-[120px] py-3 md:py-4 px-4 text-center border-b-2 font-medium text-sm transition-colors ${activeTab === 'pickups'
+                                    ? 'border-green-500 text-green-600'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                }`}
+                        >
+                            My Pickups
+                        </button>
+                    </nav>
+                </div>
             </div>
 
             {activeTab === 'listings' && (

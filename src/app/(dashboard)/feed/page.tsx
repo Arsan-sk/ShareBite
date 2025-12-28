@@ -52,31 +52,32 @@ export default async function FeedPage() {
         : []
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-8">
+            <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 md:mb-8 gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Live Food Feed</h1>
-                    <p className="text-gray-500 mt-2 text-sm max-w-lg">
+                    <h1 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">Live Food Feed</h1>
+                    <p className="text-gray-500 mt-1 md:mt-2 text-xs md:text-sm max-w-lg">
                         Real-time listings personalized for you based on urgency and location.
                         Help us rescue food before it expires!
                     </p>
                 </div>
+                {/* Hide Share Food button on mobile - it's in bottom nav */}
                 <Link
                     href="/listings/create"
-                    className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-sm font-medium rounded-xl shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 transform hover:-translate-y-0.5"
+                    className="hidden md:inline-flex items-center justify-center px-6 py-3 border border-transparent text-sm font-medium rounded-xl shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 transform hover:-translate-y-0.5"
                 >
                     + Share Food
                 </Link>
             </div>
 
-            {/* Grid Layout - Wider Cards */}
-            <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
+            {/* Grid Layout - Responsive: Single column on mobile, 2 on tablet, 3 on desktop */}
+            <div className="grid gap-4 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
                 {listings?.map((listing) => (
                     <ListingCard key={listing.id} listing={listing} />
                 ))}
 
                 {!listings?.length && (
-                    <div className="col-span-full py-16 text-center bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
+                    <div className="col-span-full py-12 md:py-16 text-center bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
                         <div className="mx-auto h-12 w-12 text-gray-300">
                             <svg className="h-full w-full" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
