@@ -2,6 +2,8 @@ import { createClient } from '@/utils/supabase/server'
 import Link from 'next/link'
 import { getPersonalizedFeed, ListingWithPriority } from '@/utils/feed'
 import { ListingCard } from '@/components/ListingCard'
+import { ReelFeedContainer } from '@/components/ReelFeedContainer'
+import { ReelCard } from '@/components/ReelCard'
 
 export default async function FeedPage() {
     const supabase = await createClient()
@@ -70,8 +72,29 @@ export default async function FeedPage() {
                 </Link>
             </div>
 
-            {/* Grid Layout - Responsive: Single column on mobile, 2 on tablet, 3 on desktop */}
-            <div className="grid gap-4 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
+            {/* Mobile: Reel-Style Feed */}
+            <div className="md:hidden -mx-4">
+                {listings?.length > 0 ? (
+                    <ReelFeedContainer>
+                        {listings.map((listing, index) => (
+                            <ReelCard key={listing.id} listing={listing} index={index} />
+                        ))}
+                    </ReelFeedContainer>
+                ) : (
+                    <div className="py-16 text-center bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 mx-4">
+                        <div className="mx-auto h-12 w-12 text-gray-300">
+                            <svg className="h-full w-full" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                            </svg>
+                        </div>
+                        <h3 className="mt-2 text-sm font-medium text-gray-900">No active listings</h3>
+                        <p className="mt-1 text-sm text-gray-500">Be the first to share food in your area!</p>
+                    </div>
+                )}
+            </div>
+
+            {/* Desktop: Grid Layout */}
+            <div className="hidden md:grid gap-4 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
                 {listings?.map((listing) => (
                     <ListingCard key={listing.id} listing={listing} />
                 ))}
