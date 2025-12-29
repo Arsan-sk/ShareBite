@@ -16,7 +16,7 @@ export function ReelCard({ listing, index }: ReelCardProps) {
         <div
             data-reel-card
             data-index={index}
-            className="snap-center snap-always min-h-[calc(100vh-120px)] flex items-center justify-center px-4 py-6"
+            className="snap-center snap-always h-full flex items-center justify-center px-4"
         >
             <motion.div
                 initial={{ opacity: 0.9, scale: 0.95 }}

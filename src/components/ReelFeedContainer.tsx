@@ -39,7 +39,7 @@ export function ReelFeedContainer({ children }: ReelFeedContainerProps) {
     return (
         <div
             ref={containerRef}
-            className="md:hidden h-[calc(100vh-120px)] overflow-y-auto snap-y snap-mandatory scroll-smooth"
+            className="h-full w-full overflow-y-auto snap-y snap-mandatory scroll-smooth"
             style={{
                 scrollPaddingTop: '0',
                 scrollPaddingBottom: '0',
